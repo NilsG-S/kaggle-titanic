@@ -1,8 +1,13 @@
 ### Data and Files ###
 
 # Kaggle
+
+## Data Files
 data/test.csv
 data/train.csv
+
+## Output Files
+output/gender.csv
 
 ### Python ###
 

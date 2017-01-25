@@ -2,12 +2,13 @@ import csv as csv
 import numpy as numpy
 
 
-def main():
-    csv_file_object = csv.reader(open('../data/train.csv'))
-    header = next(csv_file_object)
+def training():
+    train_file = open('../data/train.csv', newline='')
+    train_file_object = csv.reader(train_file)
+    header = next(train_file_object)
 
     data = []
-    for row in csv_file_object:
+    for row in train_file_object:
         data.append(row)
 
     data = numpy.array(data)
@@ -38,4 +39,6 @@ def main():
     print(prop_women_survived)
     print(prop_men_survived)
 
-main()
+    train_file.close()
+
+training()
