@@ -3,62 +3,56 @@ import numpy as numpy
 
 
 def training():
+    model_file = open('../model/model.csv', 'w', newline='')
+    model_object = csv.writer(model_file)
     train_file = open('../data/train.csv', newline='')
     train_object = csv.reader(train_file)
     next(train_object)
 
-    data = []
+    # New
+
+    passengers = {}
+    survived = {}
+
+    for sex in ("female", "male"):
+        for p_class in range(1, 4):
+            for fare in range(1, 5):
+                passengers[(sex, p_class, fare)] = 0
+                survived[(sex, p_class, fare)] = 0
+
+    fare_group = {
+        0: 1,
+        1: 2,
+        2: 3,
+        3: 4
+    }
+
+    bin_width = 10
+
     for row in train_object:
-        data.append(row)
+        fare = fare_group.get(float(row[9]) // bin_width, 4)
+        passengers[(row[4], int(row[2]), fare)] += 1
+        if int(row[1]) == 1:
+            survived[(row[4], int(row[2]), fare)] += 1
 
-    data = numpy.array(data)
+    model_object.writerow(["Sex", "Pclass", "Fare", "Prediction"])
+    for sex in ("female", "male"):
+        for p_class in range(1, 4):
+            for fare in range(1, 5):
+                if passengers[(sex, p_class, fare)] == 0:
+                    rate = 0.0
+                else:
+                    rate = survived[(sex, p_class, fare)] \
+                           / passengers[(sex, p_class, fare)]
 
-    fare_ceiling = 40
-    data[data[0::, 9].astype(numpy.float) >= fare_ceiling, 9] = fare_ceiling - 1.0
+                if rate < 0.5:
+                    prediction = 0
+                else:
+                    prediction = 1
 
-    fare_bracket_size = 10
-    number_of_price_brackets = fare_ceiling // fare_bracket_size
+                model_object.writerow([sex, p_class, fare, prediction])
 
-    number_of_classes = len(numpy.unique(data[0::, 2]))
-
-    survive_table = numpy.zeros([2, number_of_classes, number_of_price_brackets], float)
-
-    for i in range(number_of_classes):
-        for j in range(number_of_price_brackets):
-            women_only_stats = data[
-                (data[0::, 4] == "female")
-                & (data[0::, 2].astype(numpy.float)
-                   == i + 1)
-                & (data[0::, 9].astype(numpy.float)
-                   >= j * fare_bracket_size)
-                & (data[0::, 9].astype(numpy.float)
-                   < (j + 1) * fare_bracket_size),
-                1
-            ]
-
-            men_only_stats = data[
-                (data[0::, 4] != "female")
-                & (data[0::, 2].astype(numpy.float)
-                   == i + 1)
-                & (data[0::, 9].astype(numpy.float)
-                   >= j * fare_bracket_size)
-                & (data[0::, 9].astype(numpy.float)
-                   < (j + 1) * fare_bracket_size),
-                1
-            ]
-
-            survive_table[0, i, j] = \
-                numpy.mean(women_only_stats.astype(numpy.float))
-            survive_table[1, i, j] = \
-                numpy.mean(men_only_stats.astype(numpy.float))
-
-    survive_table[survive_table != survive_table] = 0
-
-    survive_table[survive_table < 0.5] = 0
-    survive_table[survive_table >= 0.5] = 1
-
-    print(survive_table)
-
+    model_file.close()
     train_file.close()
 
 training()
