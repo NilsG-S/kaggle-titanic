@@ -6,8 +6,12 @@
 data/test.csv
 data/train.csv
 
+## Model Files
+model/model.csv
+
 ## Output Files
 output/gender.csv
+output/genderclassfare.csv
 
 ### Python ###
 
