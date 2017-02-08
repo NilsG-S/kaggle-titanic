@@ -1,4 +1,18 @@
 import csv as csv
+import pandas as pandas
+
+
+def data_handler(pas, sur, ages, fares, width, row):
+    # Performs a floor operation at intervals of bin_width
+    # If the result cannot be found, return fare bracket 4
+    fare = fares.get(row[9] // width, 4)
+    # Add 1 to the given category in the passengers dict
+    pas[(row[4], row[2], fare)] += 1
+    # Append current row value to correct entry in ages
+    ages[(row[4], row[2], fare)].append(row[5])
+    if int(row[1]) == 1:
+        # If the passenger survived add 1 to the correct category
+        sur[(row[4], row[2], fare)] += 1
 
 
 def training():
@@ -11,9 +25,12 @@ def training():
     # Skip the header row
     next(train_object)
 
+    data = pandas.read_csv('../data/train.csv', header=0)
+
     # Dictionaries with keys based on sex, passenger class, and fare bracket
     passengers = {}
     survived = {}
+    ages = {}
 
     # Initializing the dictionaries to 0
     for sex in ("female", "male"):
@@ -21,6 +38,7 @@ def training():
             for fare in range(1, 5):
                 passengers[(sex, p_class, fare)] = 0
                 survived[(sex, p_class, fare)] = 0
+                ages[(sex, p_class, fare)] = []
 
     # A dictionary to match an integer value to a fare bracket
     # Fair bracket 1 is for fare =< 10
@@ -37,15 +55,11 @@ def training():
     # Width of the fare brackets
     bin_width = 10
 
-    for row in train_object:
-        # Performs a floor operation at intervals of bin_width
-        # If the result cannot be found, return fare bracket 4
-        fare = fare_group.get(float(row[9]) // bin_width, 4)
-        # Add 1 to the given category in the passengers dict
-        passengers[(row[4], int(row[2]), fare)] += 1
-        if int(row[1]) == 1:
-            # If the passenger survived add 1 to the correct category
-            survived[(row[4], int(row[2]), fare)] += 1
+    data.apply(lambda x: data_handler(passengers, survived, ages, fare_group,
+                                      bin_width, x), axis=1)
+
+    # data['Gender'] = data['Sex'].map({'female': 0, 'male': 1}).astype(int)
+    # median_ages[i, j] = df[(df['Gender'] == i) & (df['Pclass'] == j + 1)]['Age'].dropna().median()
 
     model_object.writerow(["Sex", "Pclass", "Fare", "Prediction"])
     for sex in ("female", "male"):
