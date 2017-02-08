@@ -26,12 +26,12 @@ def data_cleaning(age_medians, row):
 def data_gathering(pas, sur, fares, width, row):
     # Performs a floor operation at intervals of bin_width
     # If the result cannot be found, return fare bracket 4
-    fare = fares.get(row[9] // width, 4)
+    fare = fares.get(row['Fare'] // width, 4)
     # Add 1 to the given category in the passengers dict
-    pas[(row[4], row[2], fare)] += 1
-    if int(row[1]) == 1:
+    pas[(row['Gender'], row['Pclass'], fare)] += 1
+    if int(row['Survived']) == 1:
         # If the passenger survived add 1 to the correct category
-        sur[(row[4], row[2], fare)] += 1
+        sur[(row['Gender'], row['Pclass'], fare)] += 1
 
 
 def training():
@@ -60,18 +60,20 @@ def training():
 
     data = data.apply(lambda x: data_cleaning(age_medians, x), axis=1)
 
+    # Feature Engineering
+
     # Data gathering
 
-    # Dictionaries with keys based on sex, passenger class, and fare bracket
+    # Dictionaries with keys based on gender, passenger class, and fare bracket
     passengers = {}
     survived = {}
 
     # Initializing the dictionaries to 0
-    for sex in ("female", "male"):
+    for gender in (0, 1):
         for p_class in range(1, 4):
             for fare in range(1, 5):
-                passengers[(sex, p_class, fare)] = 0
-                survived[(sex, p_class, fare)] = 0
+                passengers[(gender, p_class, fare)] = 0
+                survived[(gender, p_class, fare)] = 0
 
     # A dictionary to match an integer value to a fare bracket
     # Fair bracket 1 is for fare =< 10
@@ -93,17 +95,17 @@ def training():
 
     # Data analysis
 
-    model_object.writerow(["Sex", "Pclass", "Fare", "Prediction"])
-    for sex in ("female", "male"):
+    model_object.writerow(["Gender", "Pclass", "Fare", "Prediction"])
+    for gender in (0, 1):
         for p_class in range(1, 4):
             for fare in range(1, 5):
-                if passengers[(sex, p_class, fare)] == 0:
+                if passengers[(gender, p_class, fare)] == 0:
                     # If there were no passengers, set the survival rate to 0
                     rate = 0.0
                 else:
                     # Otherwise, the survival rate is survived / passengers
-                    rate = survived[(sex, p_class, fare)] \
-                           / passengers[(sex, p_class, fare)]
+                    rate = survived[(gender, p_class, fare)] \
+                           / passengers[(gender, p_class, fare)]
 
                 if rate < 0.5:
                     # If the rate is less than 0.5, assume nobody survived
@@ -113,7 +115,7 @@ def training():
                     prediction = 1
 
                 # Write the prediction to the model file
-                model_object.writerow([sex, p_class, fare, prediction])
+                model_object.writerow([gender, p_class, fare, prediction])
 
     model_file.close()
 
