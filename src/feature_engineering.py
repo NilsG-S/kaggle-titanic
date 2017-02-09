@@ -8,14 +8,12 @@ def generate(row):
     return row
 
 
-def gen_features():
+def gen_features(input_path, output_path):
     # Open the cleaned training data set
-    data = pandas.read_csv('../cleaned/clean_train.csv', header=0)
+    data = pandas.read_csv(input_path, header=0)
 
     # Feature engineering
 
     data = data.apply(lambda x: generate(x), axis=1)
 
-    data.to_csv('../engineered/engineer_train.csv', index=False)
-
-gen_features()
+    data.to_csv(output_path, index=False)

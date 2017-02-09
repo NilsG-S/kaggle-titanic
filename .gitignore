@@ -15,6 +15,7 @@ model/model.csv
 
 ## Feature Engineering Files
 engineered/engineer_train.csv
+engineered/engineer_test.csv
 
 ## Output Files
 output/gender.csv
