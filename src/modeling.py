@@ -1,26 +1,4 @@
-import csv as csv
 import pandas as pandas
-
-
-def age_data(ages, row):
-    # Append current row value to correct entry in ages
-    ages[(row['Sex'], row['Pclass'])].append(row['Age'])
-
-
-def data_cleaning(age_medians, row):
-    if row['Sex'] == 'female':
-        row['Gender'] = 0
-    else:
-        row['Gender'] = 1
-
-    if pandas.isnull(row['Age']):
-        row['AgeFill'] = age_medians[(row['Sex'], row['Pclass'])]
-        row['AgeIsNull'] = 1
-    else:
-        row['AgeFill'] = row['Age']
-        row['AgeIsNull'] = 0
-
-    return row
 
 
 def data_gathering(pas, sur, fares, width, row):
@@ -34,33 +12,9 @@ def data_gathering(pas, sur, fares, width, row):
         sur[(row['Gender'], row['Pclass'], fare)] += 1
 
 
-def training():
-    # Open the file to hold the model (trained data)
-    model_file = open('../model/model.csv', 'w', newline='')
-    model_object = csv.writer(model_file)
+def gen_model():
     # Open the training data set
-    data = pandas.read_csv('../data/train.csv', header=0)
-
-    # Data cleaning
-
-    ages = {}
-    age_medians = {}
-
-    for sex in ("female", "male"):
-        for p_class in range(1, 4):
-            ages[(sex, p_class)] = []
-            age_medians[(sex, p_class)] = 0
-
-    data.apply(lambda x: age_data(ages, x), axis=1)
-
-    for sex in ("female", "male"):
-        for p_class in range(1, 4):
-            age_medians[(sex, p_class)] = \
-                pandas.Series(ages[(sex, p_class)]).median()
-
-    data = data.apply(lambda x: data_cleaning(age_medians, x), axis=1)
-
-    # Feature Engineering
+    data = pandas.read_csv('../cleaned/clean_train.csv', header=0)
 
     # Data gathering
 
@@ -95,7 +49,7 @@ def training():
 
     # Data analysis
 
-    model_object.writerow(["Gender", "Pclass", "Fare", "Prediction"])
+    rows = [["Gender", "Pclass", "Fare", "Prediction"]]
     for gender in (0, 1):
         for p_class in range(1, 4):
             for fare in range(1, 5):
@@ -115,8 +69,6 @@ def training():
                     prediction = 1
 
                 # Write the prediction to the model file
-                model_object.writerow([gender, p_class, fare, prediction])
+                rows.append([gender, p_class, fare, prediction])
 
-    model_file.close()
-
-training()
+    pandas.DataFrame(rows).to_csv('../model/model.csv', index=False, header=0)
