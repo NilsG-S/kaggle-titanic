@@ -13,6 +13,9 @@ cleaned/clean_train.csv
 ## Model Files
 model/model.csv
 
+## Feature Engineering Files
+engineered/engineer_train.csv
+
 ## Output Files
 output/gender.csv
 output/genderclassfare.csv
