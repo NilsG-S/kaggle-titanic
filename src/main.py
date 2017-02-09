@@ -1,7 +1,7 @@
 import cleaning
 import modeling
 import testing
-import feature_engineering
+import engineering
 
 
 def main():
@@ -10,11 +10,11 @@ def main():
 
     modeling.gen_model()
 
-    feature_engineering.gen_features(
+    engineering.gen_features(
         '../cleaned/clean_train.csv',
         '../engineered/engineer_train.csv'
     )
-    feature_engineering.gen_features(
+    engineering.gen_features(
         '../cleaned/clean_test.csv',
         '../engineered/engineer_test.csv'
     )

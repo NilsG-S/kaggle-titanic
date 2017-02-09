@@ -6,7 +6,7 @@ def age_gathering(ages, row):
     ages[(row['Sex'], row['Pclass'])].append(row['Age'])
 
 
-def cleaning(age_medians, row):
+def cleaning(age_medians, ports, row):
     if row['Sex'] == 'female':
         row['Gender'] = 0
     else:
@@ -18,6 +18,9 @@ def cleaning(age_medians, row):
     else:
         row['AgeFill'] = row['Age']
         row['AgeIsNull'] = 0
+
+    if not pandas.isnull(row['Embarked']):
+        row['Port'] = ports[row['Embarked']]
 
     return row
 
@@ -43,6 +46,12 @@ def clean(input_path, output_path):
             age_medians[(sex, p_class)] = \
                 pandas.Series(ages[(sex, p_class)]).median()
 
-    data = data.apply(lambda x: cleaning(age_medians, x), axis=1)
+    ports = {
+        'C': 0,
+        'Q': 1,
+        'S': 2
+    }
+
+    data = data.apply(lambda x: cleaning(age_medians, ports, x), axis=1)
 
     data.to_csv(output_path, index=False)
