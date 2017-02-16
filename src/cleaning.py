@@ -1,4 +1,23 @@
 import pandas as pandas
+from sklearn import tree
+
+
+def tree_fill(data, target_name, feature_names):
+    nan_free = data[target_name + feature_names].dropna()
+
+    target = nan_free[target_name].values
+    features = nan_free[feature_names].values
+
+    train_tree = tree.DecisionTreeClassifier()
+    train_tree.fit(features, target)
+
+    nan_features = data[data[target_name].isnull()][feature_names].values
+
+    nan_fill = train_tree.predict(nan_features)
+
+    data = data[data[target_name].map(
+        lambda x: nan_fill.pop(0) if pandas.isnull(x) else True
+    )]
 
 
 def age_gathering(ages, row):
@@ -51,6 +70,9 @@ def clean(input_path, output_path):
         'Q': 1,
         'S': 2
     }
+
+    # Detect rows with NaN values
+    # data[data.isnull().values]
 
     data = data.apply(lambda x: cleaning(age_medians, ports, x), axis=1)
 
