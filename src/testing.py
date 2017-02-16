@@ -1,21 +1,32 @@
-import csv as csv
-import numpy as numpy
+import pandas as pandas
 
 
-def testing():
-    prediction_file = open('../output/genderclassfare.csv', 'w', newline='')
-    prediction_object = csv.writer(prediction_file)
-    test_file = open('../data/test.csv', newline='')
-    test_object = csv.reader(test_file)
-    next(test_object)
-    model_file = open('../model/model.csv', newline='')
-    model_object = csv.reader(model_file)
-    next(model_object)
+def model_gathering(survived, row):
+    survived[(row['Gender'], int(row['Pclass']), int(row['Fare']))] = \
+        row['Prediction']
+
+
+def results(sur, fares, width, row):
+    if not row['Fare']:
+        fare = 0.0
+    else:
+        fare = row['Fare']
+
+    fare_group = fares.get(fare // width, 4)
+
+    return [row['PassengerId'],
+            sur[(row['Gender'],
+                 row['Pclass'],
+                 fare_group)]]
+
+
+def test():
+    test_data = pandas.read_csv('../cleaned/clean_test.csv', header=0)
+    model_data = pandas.read_csv('../model/model.csv', header=0)
 
     survived = {}
 
-    for row in model_object:
-        survived[(row[0], int(row[1]), int(row[2]))] = row[3]
+    model_data.apply(lambda x: model_gathering(survived, x), axis=1)
 
     fare_groups = {
         0: 1,
@@ -26,20 +37,12 @@ def testing():
 
     bin_width = 10
 
-    prediction_object.writerow(["PassengerId", "Survived"])
-    for row in test_object:
-        if not row[8]:
-            fare = 0.0
-        else:
-            fare = float(row[8])
+    output = (
+        test_data.apply(
+            lambda x: results(survived, fare_groups, bin_width, x),
+            axis=1
+        ).tolist()
+    )
+    output.insert(0, ["PassengerId", "Survived"])
 
-        fare_group = fare_groups.get(fare // bin_width, 4)
-        prediction_object.writerow(
-            [row[0], survived[(row[3], int(row[1]), fare_group)]]
-        )
-
-    prediction_file.close()
-    test_file.close()
-    model_file.close()
-
-testing()
+    pandas.DataFrame(output).to_csv('../output/genderclassfare.csv', index=False, header=0)

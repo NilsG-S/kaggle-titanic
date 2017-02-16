@@ -6,14 +6,25 @@
 data/test.csv
 data/train.csv
 
+## Cleaned Files
+cleaned/clean_test.csv
+cleaned/clean_train.csv
+
 ## Model Files
 model/model.csv
+
+## Feature Engineering Files
+engineered/engineer_train.csv
+engineered/engineer_test.csv
 
 ## Output Files
 output/gender.csv
 output/genderclassfare.csv
 
 ### Python ###
+
+# Compiled Files
+__pycache__/
 
 # Unit test / coverage reports
 htmlcov/
