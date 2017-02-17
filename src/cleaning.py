@@ -2,6 +2,47 @@ import pandas as pandas
 from sklearn import tree
 
 
+# Detect rows with NaN values
+# data[data.isnull().values]
+
+# Converting
+
+def converting(row):
+    if row['Sex'] == 'female':
+        row['Gender'] = 0
+    elif row['Sex'] == 'male':
+        row['Gender'] = 1
+
+    if row["Embarked"] == "C":
+        row['Port'] = 0
+    elif row["Embarked"] == "Q":
+        row['Port'] = 1
+    elif row["Embarked"] == "S":
+        row['Port'] = 2
+
+    # Fair bracket 1 is for fare =< 10
+    if row["Fare"] <= 10:
+        row["FareGroup"] = 1
+    # Fair bracket 2 is for fare =< 20
+    elif row["Fare"] <= 20:
+        row["FareGroup"] = 2
+    # Fair bracket 3 is for fare =< 30
+    elif row["Fare"] <= 30:
+        row["FareGroup"] = 3
+    # Fair bracket 4 is for fare > 30
+    elif row["Fare"] > 30:
+        row["FareGroup"] = 4
+
+    return row
+
+
+# Gathering
+
+def age_gathering(ages, row):
+    # Append current row value to correct entry in ages
+    ages[(row['Sex'], row['Pclass'])].append(row['Age'])
+
+
 def tree_fill(data, target_name, feature_names):
     nan_free = data[target_name + feature_names].dropna()
 
@@ -15,22 +56,12 @@ def tree_fill(data, target_name, feature_names):
 
     nan_fill = train_tree.predict(nan_features)
 
-    data = data[data[target_name].map(
-        lambda x: nan_fill.pop(0) if pandas.isnull(x) else True
-    )]
+    return nan_fill
 
 
-def age_gathering(ages, row):
-    # Append current row value to correct entry in ages
-    ages[(row['Sex'], row['Pclass'])].append(row['Age'])
+# Cleaning
 
-
-def cleaning(age_medians, ports, row):
-    if row['Sex'] == 'female':
-        row['Gender'] = 0
-    else:
-        row['Gender'] = 1
-
+def cleaning(age_medians, fare_fill, row):
     if pandas.isnull(row['Age']):
         row['AgeFill'] = age_medians[(row['Sex'], row['Pclass'])]
         row['AgeIsNull'] = 1
@@ -38,8 +69,12 @@ def cleaning(age_medians, ports, row):
         row['AgeFill'] = row['Age']
         row['AgeIsNull'] = 0
 
-    if not pandas.isnull(row['Embarked']):
-        row['Port'] = ports[row['Embarked']]
+    if pandas.isnull(row["Fare"]):
+        row["FareFill"] = fare_fill.pop(0)
+        row["FareIsNull"] = 1
+    else:
+        row["FareFill"] = row["Fare"]
+        row["FareIsNull"] = 0
 
     return row
 
@@ -48,7 +83,11 @@ def clean(input_path, output_path):
     # Open the training data set
     data = pandas.read_csv(input_path, header=0)
 
-    # Data cleaning
+    # Converting
+
+    data = data.apply(lambda x: converting(x), axis=1)
+
+    # Gathering
 
     ages = {}
     age_medians = {}
@@ -65,15 +104,12 @@ def clean(input_path, output_path):
             age_medians[(sex, p_class)] = \
                 pandas.Series(ages[(sex, p_class)]).median()
 
-    ports = {
-        'C': 0,
-        'Q': 1,
-        'S': 2
-    }
+    fare_fill = tree_fill(data, ["FareGroup"], ["Pclass", "Gender"])
 
-    # Detect rows with NaN values
-    # data[data.isnull().values]
+    # Cleaning
 
-    data = data.apply(lambda x: cleaning(age_medians, ports, x), axis=1)
+    data = data.apply(lambda x: cleaning(age_medians, fare_fill, x), axis=1)
+
+    # Output
 
     data.to_csv(output_path, index=False)
