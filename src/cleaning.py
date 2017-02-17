@@ -44,6 +44,12 @@ def age_gathering(ages, row):
 
 
 def tree_fill(data, target_name, feature_names):
+    nan_fill = []
+
+    test = data[data[target_name].isnull().values]
+    if test.empty:
+        return nan_fill
+
     nan_free = data[target_name + feature_names].dropna()
 
     target = nan_free[target_name].values
@@ -52,9 +58,9 @@ def tree_fill(data, target_name, feature_names):
     train_tree = tree.DecisionTreeClassifier()
     train_tree.fit(features, target)
 
-    nan_features = data[data[target_name].isnull()][feature_names].values
+    nan_features = data[data[target_name].isnull().values][feature_names].values
 
-    nan_fill = train_tree.predict(nan_features)
+    nan_fill = train_tree.predict(nan_features).tolist()
 
     return nan_fill
 
