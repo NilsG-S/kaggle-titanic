@@ -2,6 +2,7 @@ import cleaning
 import modeling
 import testing
 import engineering
+import learning
 
 
 def main():
@@ -20,5 +21,6 @@ def main():
     )
 
     testing.test()
+    learning.learn()
 
 main()
