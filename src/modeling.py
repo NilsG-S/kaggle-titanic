@@ -1,15 +1,12 @@
 import pandas as pandas
 
 
-def data_gathering(pas, sur, fares, width, row):
-    # Performs a floor operation at intervals of bin_width
-    # If the result cannot be found, return fare bracket 4
-    fare = fares.get(row['Fare'] // width, 4)
+def data_gathering(pas, sur, row):
     # Add 1 to the given category in the passengers dict
-    pas[(row['Gender'], row['Pclass'], fare)] += 1
+    pas[(row['Gender'], row['Pclass'], row['FareGroup'])] += 1
     if int(row['Survived']) == 1:
         # If the passenger survived add 1 to the correct category
-        sur[(row['Gender'], row['Pclass'], fare)] += 1
+        sur[(row['Gender'], row['Pclass'], row['FareGroup'])] += 1
 
 
 def gen_model():
@@ -29,23 +26,7 @@ def gen_model():
                 passengers[(gender, p_class, fare)] = 0
                 survived[(gender, p_class, fare)] = 0
 
-    # A dictionary to match an integer value to a fare bracket
-    # Fair bracket 1 is for fare =< 10
-    # Fair bracket 2 is for fare =< 20
-    # Fair bracket 3 is for fare =< 30
-    # Fair bracket 4 is for fare > 30
-    fare_group = {
-        0: 1,
-        1: 2,
-        2: 3,
-        3: 4
-    }
-
-    # Width of the fare brackets
-    bin_width = 10
-
-    data.apply(lambda x: data_gathering(passengers, survived, fare_group,
-                                        bin_width, x), axis=1)
+    data.apply(lambda x: data_gathering(passengers, survived, x), axis=1)
 
     # Data analysis
 
