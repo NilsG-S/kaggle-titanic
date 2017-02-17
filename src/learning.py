@@ -12,19 +12,15 @@ def learn():
 
     train_features = engineer_train[
         ["AgeFill",
-         "Fare",
+         "FareGroup",
          "Gender",
          "Pclass",
          "FamilySize"]
     ].values
 
-    engineer_test = engineer_test[engineer_test["Fare"].map(
-        lambda x: False if pandas.isnull(x) else True
-    )]
-
     test_features = engineer_test[
         ["AgeFill",
-         "Fare",
+         "FareGroup",
          "Gender",
          "Pclass",
          "FamilySize"]
@@ -35,7 +31,13 @@ def learn():
     train_tree = tree.DecisionTreeClassifier()
     train_tree.fit(train_features, target)
 
-    print(train_tree.feature_importances_)
-    print(train_tree.predict(test_features))
+    predictions = train_tree.predict(test_features)
+    passengers = engineer_test["PassengerId"].values
+
+    data = [["PassengerId", "Survived"]]
+    for index in range(0, len(passengers)):
+        data.append([passengers[index], predictions[index]])
+
+    pandas.DataFrame(data).to_csv('../output/decision_tree.csv', index=False, header=0)
 
 learn()

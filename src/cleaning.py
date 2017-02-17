@@ -75,11 +75,10 @@ def cleaning(age_medians, fare_fill, row):
         row['AgeFill'] = row['Age']
         row['AgeIsNull'] = 0
 
-    if pandas.isnull(row["Fare"]):
-        row["FareFill"] = fare_fill.pop(0)
+    if pandas.isnull(row["FareGroup"]):
+        row["FareGroup"] = fare_fill.pop(0)
         row["FareIsNull"] = 1
     else:
-        row["FareFill"] = row["Fare"]
         row["FareIsNull"] = 0
 
     return row
