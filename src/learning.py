@@ -39,5 +39,3 @@ def learn():
         data.append([passengers[index], predictions[index]])
 
     pandas.DataFrame(data).to_csv('../output/decision_tree.csv', index=False, header=0)
-
-learn()
