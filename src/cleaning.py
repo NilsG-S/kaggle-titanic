@@ -67,19 +67,23 @@ def tree_fill(data, target_name, feature_names):
 
 # Cleaning
 
-def cleaning(age_medians, fare_fill, row):
+def filling(col, is_null, fill, row):
+    if pandas.isnull(row[col]):
+        row[col] = fill.pop(0)
+        row[is_null] = 1
+    else:
+        row[is_null] = 0
+
+    return row
+
+
+def cleaning(age_medians, row):
     if pandas.isnull(row['Age']):
         row['AgeFill'] = age_medians[(row['Sex'], row['Pclass'])]
         row['AgeIsNull'] = 1
     else:
         row['AgeFill'] = row['Age']
         row['AgeIsNull'] = 0
-
-    if pandas.isnull(row["FareGroup"]):
-        row["FareGroup"] = fare_fill.pop(0)
-        row["FareIsNull"] = 1
-    else:
-        row["FareIsNull"] = 0
 
     return row
 
@@ -110,10 +114,17 @@ def clean(input_path, output_path):
                 pandas.Series(ages[(sex, p_class)]).median()
 
     fare_fill = tree_fill(data, ["FareGroup"], ["Pclass", "Gender"])
+    port_fill = tree_fill(data, ["Port"], ["Pclass", "Gender"])
 
     # Cleaning
 
-    data = data.apply(lambda x: cleaning(age_medians, fare_fill, x), axis=1)
+    data = data.apply(
+        lambda x: filling("FareGroup", "FareIsNull", fare_fill, x), axis=1
+    )
+    data = data.apply(
+        lambda x: filling("Port", "PortIsNull", port_fill, x), axis=1
+    )
+    data = data.apply(lambda x: cleaning(age_medians, x), axis=1)
 
     # Output
 

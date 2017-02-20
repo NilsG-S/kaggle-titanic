@@ -15,7 +15,8 @@ def learn():
          "FareGroup",
          "Gender",
          "Pclass",
-         "FamilySize"]
+         "FamilySize",
+         "Port"]
     ].values
 
     test_features = engineer_test[
@@ -23,12 +24,13 @@ def learn():
          "FareGroup",
          "Gender",
          "Pclass",
-         "FamilySize"]
+         "FamilySize",
+         "Port"]
     ].values
 
     target = engineer_train["Survived"].values
 
-    train_tree = tree.DecisionTreeClassifier()
+    train_tree = tree.DecisionTreeClassifier(max_depth=10, min_samples_split=5)
     train_tree.fit(train_features, target)
 
     predictions = train_tree.predict(test_features)
