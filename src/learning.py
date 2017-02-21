@@ -1,5 +1,5 @@
 import pandas as pandas
-from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 
 
 def learn():
@@ -30,14 +30,14 @@ def learn():
 
     target = engineer_train["Survived"].values
 
-    train_tree = tree.DecisionTreeClassifier(max_depth=10, min_samples_split=5)
-    train_tree.fit(train_features, target)
+    forest = RandomForestClassifier(max_depth=10, min_samples_split=2, n_estimators=100)
+    forest.fit(train_features, target)
 
-    predictions = train_tree.predict(test_features)
+    predictions = forest.predict(test_features)
     passengers = engineer_test["PassengerId"].values
 
     data = [["PassengerId", "Survived"]]
     for index in range(0, len(passengers)):
         data.append([passengers[index], predictions[index]])
 
-    pandas.DataFrame(data).to_csv('../output/decision_tree.csv', index=False, header=0)
+    pandas.DataFrame(data).to_csv('../output/random_forest.csv', index=False, header=0)

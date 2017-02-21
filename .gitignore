@@ -21,6 +21,7 @@ engineered/engineer_test.csv
 output/gender.csv
 output/genderclassfare.csv
 output/decision_tree.csv
+output/random_forest.csv
 
 ### Python ###
 
