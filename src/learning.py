@@ -16,6 +16,16 @@ FEATURES = [
 ]
 
 
+PARAMS = {
+    'criterion': 'entropy',
+    'max_depth': 5,
+    'max_features': 'log2',
+    'min_samples_leaf': 5,
+    'min_samples_split': 2,
+    'n_estimators': 4
+}
+
+
 def grid():
     engineer_train = pandas.read_csv(
         'engineered/engineer_train.csv', header=0
@@ -56,7 +66,7 @@ def test():
     x_target = engineer_train["Survived"].values[0:445]
     y_comp = engineer_train["Survived"].values[446::]
 
-    test_forest = RandomForestClassifier(n_estimators=100)
+    test_forest = RandomForestClassifier(**PARAMS)
     test_forest.fit(x_train, x_target)
     test_pred = test_forest.predict(y_train)
 
@@ -82,7 +92,7 @@ def learn():
 
     target = engineer_train["Survived"].values
 
-    forest = RandomForestClassifier(max_depth=10, min_samples_split=2, n_estimators=100)
+    forest = RandomForestClassifier(**PARAMS)
     forest.fit(train_features, target)
 
     predictions = forest.predict(test_features)
