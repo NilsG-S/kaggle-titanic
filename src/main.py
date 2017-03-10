@@ -1,8 +1,8 @@
-import cleaning
-import modeling
-import testing
-import engineering
-import learning
+import src.cleaning as cleaning
+import src.modeling as modeling
+import src.testing as testing
+import src.engineering as engineering
+import src.learning as learning
 
 
 # Old
