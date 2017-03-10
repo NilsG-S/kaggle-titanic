@@ -30,6 +30,7 @@ def call_learn():
 
     return True
 
+
 def call_test():
     learning.test()
 
