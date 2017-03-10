@@ -15,7 +15,7 @@ def learn():
          "Fare",
          "Sex",
          "Pclass",
-         "FamilySize",
+         "IsAlone",
          "Embarked"]
     ].values
 
@@ -24,7 +24,7 @@ def learn():
          "Fare",
          "Sex",
          "Pclass",
-         "FamilySize",
+         "IsAlone",
          "Embarked"]
     ].values
 
