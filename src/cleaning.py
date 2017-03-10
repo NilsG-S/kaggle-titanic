@@ -1,4 +1,5 @@
 import math as math
+import re as re
 
 import pandas as pandas
 from sklearn import tree
@@ -23,20 +24,35 @@ def converting(row):
         row['Embarked'] = 2
 
     # Fair bracket 1 is for fare =< 10
-    if row["Fare"] <= 10:
+    if row["Fare"] <= 7.91:
         row["Fare"] = 1
     # Fair bracket 2 is for fare =< 20
-    elif row["Fare"] <= 20:
+    elif row["Fare"] <= 14.454:
         row["Fare"] = 2
     # Fair bracket 3 is for fare =< 30
-    elif row["Fare"] <= 30:
+    elif row["Fare"] <= 31:
         row["Fare"] = 3
     # Fair bracket 4 is for fare > 30
-    elif row["Fare"] > 30:
+    elif row["Fare"] > 31:
         row["Fare"] = 4
 
     if not pandas.isnull(row['Age']):
         row["Age"] = math.ceil(row["Age"] / 16)
+
+    title = re.search(' ([A-Za-z]+)\.', row["Name"]).group(1)
+
+    if title == "Master":
+        row["Title"] = 0
+    elif title == "Mlle":
+        row["Title"] = 1
+    elif title == "Ms":
+        row["Title"] = 1
+    elif title == "Mr":
+        row["Title"] = 2
+    elif title == "Mme":
+        row["Title"] = 3
+    else:
+        row["Title"] = 4
 
     return row
 

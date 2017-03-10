@@ -1,18 +1,6 @@
 import src.cleaning as cleaning
-import src.modeling as modeling
-import src.testing as testing
 import src.engineering as engineering
 import src.learning as learning
-
-
-# Old
-
-def call_gen_model():
-    modeling.gen_model()
-
-
-def call_test():
-    testing.test()
 
 
 # New
@@ -43,6 +31,18 @@ def call_learn():
     return True
 
 
+def call_test():
+    learning.test()
+
+    return True
+
+
+def call_grid():
+    learning.grid()
+
+    return True
+
+
 def call_exit():
     return False
 
@@ -53,6 +53,8 @@ def main():
         "clean": call_clean,
         "gen_features": call_gen_features,
         "learn": call_learn,
+        "test": call_test,
+        "grid": call_grid,
         "exit": call_exit
     }
 
