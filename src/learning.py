@@ -1,5 +1,7 @@
 import pandas as pandas
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import make_scorer, accuracy_score
+from sklearn.model_selection import GridSearchCV
 
 
 FEATURES = [
@@ -12,6 +14,33 @@ FEATURES = [
     "Title",
     "Age*Class"
 ]
+
+
+def grid():
+    engineer_train = pandas.read_csv(
+        'engineered/engineer_train.csv', header=0
+    )
+
+    train_features = engineer_train[FEATURES].values
+    target = engineer_train["Survived"].values
+
+    grid_forest = RandomForestClassifier()
+
+    parameters = {
+        'n_estimators': [4, 6, 9],
+        'max_features': ['log2', 'sqrt', 'auto'],
+        'criterion': ['entropy', 'gini'],
+        'max_depth': [2, 3, 5, 10],
+        'min_samples_split': [2, 3, 5],
+        'min_samples_leaf': [1, 5, 8]
+    }
+
+    accuracy = make_scorer(accuracy_score)
+
+    grid_search = GridSearchCV(grid_forest, parameters, scoring=accuracy)
+    grid_search.fit(train_features, target)
+
+    print(grid_search.best_params_)
 
 
 def test():

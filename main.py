@@ -37,6 +37,12 @@ def call_test():
     return True
 
 
+def call_grid():
+    learning.grid()
+
+    return True
+
+
 def call_exit():
     return False
 
@@ -48,6 +54,7 @@ def main():
         "gen_features": call_gen_features,
         "learn": call_learn,
         "test": call_test,
+        "grid": call_grid,
         "exit": call_exit
     }
 
