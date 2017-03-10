@@ -22,7 +22,7 @@ PARAMS = {
     'max_features': 'log2',
     'min_samples_leaf': 5,
     'min_samples_split': 2,
-    'n_estimators': 4
+    'n_estimators': 300
 }
 
 
@@ -37,7 +37,7 @@ def grid():
     grid_forest = RandomForestClassifier()
 
     parameters = {
-        'n_estimators': [4, 6, 9],
+        'n_estimators': [3, 300],
         'max_features': ['log2', 'sqrt', 'auto'],
         'criterion': ['entropy', 'gini'],
         'max_depth': [2, 3, 5, 10],
