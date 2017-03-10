@@ -11,21 +11,21 @@ def learn():
     )
 
     train_features = engineer_train[
-        ["AgeFill",
-         "FareGroup",
-         "Gender",
+        ["Age",
+         "Fare",
+         "Sex",
          "Pclass",
          "FamilySize",
-         "Port"]
+         "Embarked"]
     ].values
 
     test_features = engineer_test[
-        ["AgeFill",
-         "FareGroup",
-         "Gender",
+        ["Age",
+         "Fare",
+         "Sex",
          "Pclass",
          "FamilySize",
-         "Port"]
+         "Embarked"]
     ].values
 
     target = engineer_train["Survived"].values
