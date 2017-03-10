@@ -1,3 +1,5 @@
+import math as math
+
 import pandas as pandas
 from sklearn import tree
 
@@ -32,6 +34,9 @@ def converting(row):
     # Fair bracket 4 is for fare > 30
     elif row["Fare"] > 30:
         row["FareGroup"] = 4
+
+    if not pandas.isnull(row['Age']):
+        row["Age"] = math.ceil(row["Age"] / 16)
 
     return row
 
