@@ -19,6 +19,6 @@ def gen_features(input_path, output_path):
     # Feature engineering
 
     data = data.apply(lambda x: generate(x), axis=1)
-    data = data.drop(['Parch', 'SibSp', 'Ticket', 'Cabin'], axis=1)
+    data = data.drop(['Parch', 'SibSp', 'Ticket', 'Cabin', 'Name'], axis=1)
 
     data.to_csv(output_path, index=False)

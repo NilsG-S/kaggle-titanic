@@ -1,4 +1,5 @@
 import math as math
+import re as re
 
 import pandas as pandas
 from sklearn import tree
@@ -37,6 +38,21 @@ def converting(row):
 
     if not pandas.isnull(row['Age']):
         row["Age"] = math.ceil(row["Age"] / 16)
+
+    title = re.search(' ([A-Za-z]+)\.', row["Name"]).group(1)
+
+    if title == "Master":
+        row["Title"] = 0
+    elif title == "Mlle":
+        row["Title"] = 1
+    elif title == "Ms":
+        row["Title"] = 1
+    elif title == "Mr":
+        row["Title"] = 2
+    elif title == "Mme":
+        row["Title"] = 3
+    else:
+        row["Title"] = 4
 
     return row
 

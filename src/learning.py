@@ -16,7 +16,8 @@ def learn():
          "Sex",
          "Pclass",
          "IsAlone",
-         "Embarked"]
+         "Embarked",
+         "Title"]
     ].values
 
     test_features = engineer_test[
@@ -25,7 +26,8 @@ def learn():
          "Sex",
          "Pclass",
          "IsAlone",
-         "Embarked"]
+         "Embarked",
+         "Title"]
     ].values
 
     target = engineer_train["Survived"].values
