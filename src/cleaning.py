@@ -11,29 +11,29 @@ from sklearn import tree
 
 def converting(row):
     if row['Sex'] == 'female':
-        row['Gender'] = 0
+        row['Sex'] = 0
     elif row['Sex'] == 'male':
-        row['Gender'] = 1
+        row['Sex'] = 1
 
     if row["Embarked"] == "C":
-        row['Port'] = 0
+        row['Embarked'] = 0
     elif row["Embarked"] == "Q":
-        row['Port'] = 1
+        row['Embarked'] = 1
     elif row["Embarked"] == "S":
-        row['Port'] = 2
+        row['Embarked'] = 2
 
     # Fair bracket 1 is for fare =< 10
     if row["Fare"] <= 10:
-        row["FareGroup"] = 1
+        row["Fare"] = 1
     # Fair bracket 2 is for fare =< 20
     elif row["Fare"] <= 20:
-        row["FareGroup"] = 2
+        row["Fare"] = 2
     # Fair bracket 3 is for fare =< 30
     elif row["Fare"] <= 30:
-        row["FareGroup"] = 3
+        row["Fare"] = 3
     # Fair bracket 4 is for fare > 30
     elif row["Fare"] > 30:
-        row["FareGroup"] = 4
+        row["Fare"] = 4
 
     if not pandas.isnull(row['Age']):
         row["Age"] = math.ceil(row["Age"] / 16)
@@ -72,23 +72,16 @@ def tree_fill(data, target_name, feature_names):
 
 # Cleaning
 
-def filling(col, is_null, fill, row):
+def filling(col, fill, row):
     if pandas.isnull(row[col]):
         row[col] = fill.pop(0)
-        row[is_null] = 1
-    else:
-        row[is_null] = 0
 
     return row
 
 
 def cleaning(age_medians, row):
     if pandas.isnull(row['Age']):
-        row['AgeFill'] = age_medians[(row['Sex'], row['Pclass'])]
-        row['AgeIsNull'] = 1
-    else:
-        row['AgeFill'] = row['Age']
-        row['AgeIsNull'] = 0
+        row['Age'] = age_medians[(row['Sex'], row['Pclass'])]
 
     return row
 
@@ -106,28 +99,28 @@ def clean(input_path, output_path):
     ages = {}
     age_medians = {}
 
-    for sex in ("female", "male"):
+    for sex in (0, 1):
         for p_class in range(1, 4):
             ages[(sex, p_class)] = []
             age_medians[(sex, p_class)] = 0
 
     data.apply(lambda x: age_gathering(ages, x), axis=1)
 
-    for sex in ("female", "male"):
+    for sex in (0, 1):
         for p_class in range(1, 4):
             age_medians[(sex, p_class)] = \
                 pandas.Series(ages[(sex, p_class)]).median()
 
-    fare_fill = tree_fill(data, ["FareGroup"], ["Pclass", "Gender"])
-    port_fill = tree_fill(data, ["Port"], ["Pclass", "Gender"])
+    fare_fill = tree_fill(data, ["Fare"], ["Pclass", "Sex"])
+    port_fill = tree_fill(data, ["Embarked"], ["Pclass", "Sex"])
 
     # Cleaning
 
     data = data.apply(
-        lambda x: filling("FareGroup", "FareIsNull", fare_fill, x), axis=1
+        lambda x: filling("Fare", fare_fill, x), axis=1
     )
     data = data.apply(
-        lambda x: filling("Port", "PortIsNull", port_fill, x), axis=1
+        lambda x: filling("Embarked", port_fill, x), axis=1
     )
     data = data.apply(lambda x: cleaning(age_medians, x), axis=1)
 
