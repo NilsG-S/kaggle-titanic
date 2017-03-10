@@ -2,21 +2,24 @@ import pandas as pandas
 from sklearn.ensemble import RandomForestClassifier
 
 
+FEATURES = [
+    "Age",
+    "Fare",
+    "Sex",
+    "Pclass",
+    "IsAlone",
+    "Embarked",
+    "Title",
+    "Age*Class"
+]
+
+
 def test():
     engineer_train = pandas.read_csv(
         'engineered/engineer_train.csv', header=0
     )
 
-    train_features = engineer_train[
-        ["Age",
-         "Fare",
-         "Sex",
-         "Pclass",
-         "IsAlone",
-         "Embarked",
-         "Title",
-         "Age*Class"]
-    ].values
+    train_features = engineer_train[FEATURES].values
 
     x_train = train_features[0:445]
     y_train = train_features[446::]
@@ -44,27 +47,9 @@ def learn():
         'engineered/engineer_test.csv', header=0
     )
 
-    train_features = engineer_train[
-        ["Age",
-         "Fare",
-         "Sex",
-         "Pclass",
-         "IsAlone",
-         "Embarked",
-         "Title",
-         "Age*Class"]
-    ].values
+    train_features = engineer_train[FEATURES].values
 
-    test_features = engineer_test[
-        ["Age",
-         "Fare",
-         "Sex",
-         "Pclass",
-         "IsAlone",
-         "Embarked",
-         "Title",
-         "Age*Class"]
-    ].values
+    test_features = engineer_test[FEATURES].values
 
     target = engineer_train["Survived"].values
 
