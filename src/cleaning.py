@@ -23,16 +23,16 @@ def converting(row):
         row['Embarked'] = 2
 
     # Fair bracket 1 is for fare =< 10
-    if row["Fare"] <= 10:
+    if row["Fare"] <= 7.91:
         row["Fare"] = 1
     # Fair bracket 2 is for fare =< 20
-    elif row["Fare"] <= 20:
+    elif row["Fare"] <= 14.454:
         row["Fare"] = 2
     # Fair bracket 3 is for fare =< 30
-    elif row["Fare"] <= 30:
+    elif row["Fare"] <= 31:
         row["Fare"] = 3
     # Fair bracket 4 is for fare > 30
-    elif row["Fare"] > 30:
+    elif row["Fare"] > 31:
         row["Fare"] = 4
 
     if not pandas.isnull(row['Age']):
